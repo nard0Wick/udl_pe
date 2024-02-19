@@ -25,49 +25,87 @@ def check_i(ident):
     bool = list(map(lambda x: False if(x not in alf + dig and x != '_') else True, ident)) 
 
     if(ident[0] not in alf):
-        return(True, "Identificador invalido, el primer valor de " + ident + " debe ser una letra")
+        return(True, "Identificador invalido, el primer valor de \'" + ident + "\' debe ser una letra")
     elif(not all(bool)): 
         return(True, "Identificador invalido, no debe contener caracteres especiales \'"+ ident[bool.find(False)] +"\'") 
     else: 
         return(False, "El identificador es sintácticamente correcto") 
 
 types = ['int', 'float', 'string', 'char'] 
+errores = [] 
+def severe_check(l):  
+    if(len(l) > 0):  
+        checked = check_i(l[0])
+        if(len(l) > 1): 
+            if(checked[0]):
+                errores.append(checked) 
+            else:  
+                errores.append((True, "Error de sintaxis después de \'" + l[0] +"\'")) 
+        else: 
+            errores.append(checked)
 
-#print(list(map(lambda x: cut(x, []), types)))  
-# l = []
-# for i in range(len(types)): 
-#      l.append(cut(types[i]))
-
-# print(l)
 
 def check_l(l): 
-    n_l = cut(l[0], []) + l[1:] 
-    print(n_l) 
-    if(n_l[0] not in types): 
-         return (True, "Tipo de dato invalido " + n_l[0]) 
+    if(len(l) <= 0 and len(errores) == 0): 
+        return 
     else: 
-         #print("list before: ",n_l[1:]) 
-         for i in n_l[1:]:  
-            print(i)
-            cutted = cut(i, [])
-            #print(cutted) 
-            checked = check_i(cutted[0]) 
-            #print(type(cutted))
-            if(len(cutted) > 1): 
-                if(checked[0]): 
-                    #manejo de resultados 
-                    print(checked)      
-                else: 
-                    #manejo de resultados  
-                    print(True, "Error de sintaxis, después de " + cutted[0]) 
-                break
-            else: 
-                #manejo de resultados 
-                print(checked)          
+        if(len(l) > 0): 
+            severe_check(cut(l[0], [])) 
+            return check_l(l[1:]) 
+        else: 
+            copy = errores[:]  
+            errores.clear()
+            return  copy
+        # severe_check(cut(l[0], []))  
+        # return check_l(l[1:])  
 
- 
-lista = [x.split(',') for x in " float x ,1yo, z b2    ;    ".split(';')]
-print(check_l(lista[0]))
+# def check_l(l): 
+#     n_l = cut(l[0], []) + l[1:]  
+#     print(n_l) 
+#     if(len(n_l) > 0): 
+#         n_l = n_l + l[1:]
+#         if(n_l[0] not in types): 
+#             return (True, "Tipo de dato invalido " + n_l[0]) 
+#         else: 
+#             #print("list before: ",n_l[1:]) 
+#             for i in n_l[1:]:  
+#                 print(i)
+#                 cutted = cut(i, [])
+#                 #print(cutted) 
+#                 checked = check_i(cutted[0]) 
+#                 #print(type(cutted))
+#                 if(len(cutted) > 1): 
+#                     if(checked[0]): 
+#                         #manejo de resultados 
+#                         print(checked)      
+#                     else: 
+#                         #manejo de resultados  
+#                         print(True, "Error de sintaxis después de " + cutted[0]) 
+#                     break
+#                 else: 
+#                     #manejo de resultados 
+#                     print(checked)          
 
+# # #under test 
+# inp = input("Capture una o varias listas de identificadores: ") 
+inp = "     float x ,1yo, z b2    ,   ;    ;;"  
+if(inp[0] not in alf): 
+    print("Error de sintaxis cerca de \'"+inp[0]+"\'")
+else: 
+    lista = [x.split(',') for x in inp.split(';')] 
+    #cleaned = [x for x in lista if x != []]
+    print(lista) 
+    # print(cleaned)
+
+    for i in lista: 
+        print(check_l(i)) 
+
+#print(check_l(lista))
+# print(check_l(lista[1]))
+# lista = [x.split(',') for x in inp.split(';')] 
+# for i in lista: 
+#      if(len(i) > 0):
+#         check_l(i)
+# #print(check_l(lista[0]))
 
 

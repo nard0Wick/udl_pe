@@ -8,7 +8,8 @@ import matplotlib.pyplot as plt
 
 workbook = opx.load_workbook(filename="Libro.xlsx")
 sheet = workbook.active 
-data_tuples = list(sheet.values)
+data_tuples = sheet.values 
+
  
 #1st option O(n) n = number of rows
 #mini = min(data[0]) 
@@ -37,13 +38,12 @@ data_tuples = list(sheet.values)
 
 #2nd option O(n+1) n = number of rows 
 
-def concat(l): 
-    res = () 
-    for i in l: 
-        res+= i 
-    return res 
 
-data = list(concat(data_tuples))
+#data = list(map(lambda x: 0 if(x == None) else x,concat(data_tuples)))  
+data = list(value for value in sum(data_tuples, ()) 
+                if(value != None))
+#print(data)#the problem is that aparently if you don't provide a value on the excel the cill will be auto-filled with none
+
 #basic variables
 length = len(data)
 mini = min(data)
@@ -59,9 +59,10 @@ content = {
 
 # absolute frecuency
 for i in data: 
-    for j in range(no_cls): 
+    for j in range(no_cls):   
         if(i>= content['ranges_list'][j][0] and i < content['ranges_list'][j][1]): 
-            content['abs_frecuency'][j] += 1
+            content['abs_frecuency'][j] += 1 
+            break
 
 content['abs_frecuency'][-1] += length - sum(content['abs_frecuency']) 
 #stored frecuency 
@@ -85,14 +86,6 @@ content['degrees'] = list(map(lambda x: x * 360, content['rel_frecuency']))
 #view of table 
 print(pd.DataFrame(data=content))
 
-#view graphics  
-#fig, (ax1, ax2) = plt.subplots(1, 2, figsize = (12,6))  
-#ax1.pie(content['degrees'], labels=content['num_class'], autopct="%.1f%%")  
-##ax2.title('Histogram')  
-#ax2.bar(x=content['num_class'], height=content['abs_frecuency']) 
-#plt.tight_layout() 
-#plt.show() 
-
 #aritmethic mean  
 mean = sum(map(lambda x, y: x*y, content['abs_frecuency'], content['x'])) / length 
 #median 
@@ -105,14 +98,29 @@ idx = content['std_frecuency'].index(match)
 inferior = content['ranges_list'][idx][0]#it's the value of the lowest limit that holds the current value on line variable
 Fi = content['std_frecuency'][idx -1]#means the value for stored frecuency acording to the line varible
 fi = content['abs_frecuency'][idx]#refers to the value of the absolute frecuency meaning the value of line variable 
-median = inferior + ((length/2 - Fi)/fi) * A
+median = inferior + ((length/2 - Fi)/fi) * A 
+#print(median, mean)
 
 #mode 
 fi_lower = content['abs_frecuency'][idx -1] 
 fi_upper = content['abs_frecuency'][idx +1] 
-mode = inferior + ((fi - fi_lower) / (fi  - fi_lower) + (fi - fi_upper)) * A #probably will need a correction
-print(mode)
+mode = inferior + ((fi - fi_lower) / (fi  - fi_lower + fi - fi_upper)) * A #probably will need a correction
+#print(fi, fi_lower, fi_upper)
+
 #standar deviation
+deviation = ((sum(list(map(lambda x, y: x * (y - mean)**2, content['abs_frecuency'], content['x'])))) / length -1) **(1/2)
+#deviation = list() 
+
+#Printing things done
+print(f"\nPrimer Examén de probabilidad y estadística\nICO 821-14 Ramírez Lara Gonzalo Leonardo\nArithmetic mean: {mean}\nMedian: {median}\nMode: {mode}\nEstandar deviation: {deviation}")
+
+#view graphics  
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize = (12,6))  
+ax1.pie(content['degrees'], labels=content['num_class'], autopct="%.1f%%")  
+##ax2.title('Histogram')  
+ax2.bar(x=content['num_class'], height=content['abs_frecuency']) 
+plt.tight_layout() 
+plt.show() 
 
 #plt.figure(figsize=(5,5))  
 #plt.pie(content['degrees'], labels=content['num_class'], autopct="%.1f%%")
