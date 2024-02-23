@@ -88,8 +88,9 @@ def check_l(l):
 
 # # #under test 
 # inp = input("Capture una o varias listas de identificadores: ") 
-inp = "     float x ,1yo, z b2    ,   ;    ;;"  
-if(inp[0] not in alf): 
+inp = "float x ,1yo, z b2; int x; ; ;" 
+inp.split(';')
+if(inp.split()[0] not in alf): 
     print("Error de sintaxis cerca de \'"+inp[0]+"\'")
 else: 
     lista = [x.split(',') for x in inp.split(';')] 
